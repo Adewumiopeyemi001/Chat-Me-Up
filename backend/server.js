@@ -1,4 +1,5 @@
 const express = require("express");
+//const path = require("path");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./Config/db");
@@ -17,6 +18,12 @@ app.use(cors());
 
 app.use(express.json());
 
+// app.use(express.static(path.join(__dirname, "dist")));
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "dist", "index.html"));
+// });
+
 app.get("/", (req, res) => {
   res.send("Api is Running Successfully");
 });
@@ -27,32 +34,19 @@ app.use("/api/message", messageRoutes);
 
 
 
-// const __dirname1 = path.resolve();
-
-// if (process.env.NODE_ENV === "production") {
-//     app.use(express.static(path.join(__dirname1, "/frontend/build")));
-// } else {
-//     app.get("/", (req, res) => {
-//         res.send("Api is Running Successfully");
-//     });
-// }
-
-
-
-
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on PORT ${PORT}`);
 });
 
 const io = require("socket.io")(server, {
-    pingTimeout: 60000,
-    cors: {
-        origin: "http://localhost:3000",
-    },
+  pingTimeout: 60000,
+  cors: {
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  },
 });
 
 io.on("connection", (socket) => {
